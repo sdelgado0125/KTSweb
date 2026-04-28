@@ -9,28 +9,47 @@ const COMPANY = {
 
 const SERVICES = [
   {
-    title: 'AC Repair',
-    description: 'Diagnostics and repair to restore comfort quickly and safely.',
+    title: 'AC Repair & HVAC Services',
+    items: [
+      'AC repair',
+      'HVAC troubleshooting',
+      'Thermostat installation',
+      'Routine system maintenance',
+    ],
   },
   {
-    title: 'Plumbing',
-    description: 'Leak fixes, clogs, fixture swaps, and practical plumbing repairs.',
+    title: 'Plumbing Services',
+    items: [
+      'Leak repairs',
+      'Drain unclogging',
+      'Faucet and toilet repairs',
+      'Fixture installations',
+    ],
   },
   {
-    title: 'HVAC Troubleshooting',
-    description: 'Find the real issue fast—then recommend the most cost-effective fix.',
+    title: 'Home Maintenance & Handyman Work',
+    items: [
+      'Painting',
+      'Fixture installation',
+      'Drywall patching',
+      'Door repairs',
+      'General home repairs',
+    ],
   },
   {
-    title: 'General Home Maintenance',
-    description: 'Painting, fixture installation, and minor repairs done right.',
+    title: 'Building Cleaning Services',
+    items: [
+      'Apartment building cleaning',
+      'Office cleaning',
+      'Move-in/move-out cleaning',
+      'Common-area maintenance',
+    ],
   },
   {
-    title: 'Building Cleaning & Painting',
-    description: 'Reliable upkeep for properties that need to look sharp and stay clean.',
-  },
-  {
-    title: 'Valet Trash (Apartments)',
-    description: 'Dependable doorstep pickup to keep communities clean and consistent.',
+    title: 'Valet Trash Services',
+    items: [
+      'Door-to-door trash pickup for apartment complexes with reliable nightly collection',
+    ],
   },
 ]
 
@@ -63,7 +82,9 @@ export default function App() {
       <header className="header">
         <div className="container header-inner">
           <a href="#top" className="brand">
-            <div className="brand-mark">KTS</div>
+            <div className="brand-mark" aria-hidden="true">
+              <img className="brand-logo" src="/kts-logo.png" alt="" />
+            </div>
             <div className="brand-text">
               <div className="brand-name">{COMPANY.name}</div>
               <div className="brand-sub">Home services • Property support</div>
@@ -134,7 +155,10 @@ export default function App() {
           <div className="section-head">
             <div>
               <h2>Services</h2>
-              <p>A mix of skilled trades and property support services.</p>
+              <p>
+                Skilled trades, home maintenance, commercial cleaning, and valet trash
+                for properties of all sizes.
+              </p>
             </div>
             <PhoneLink />
           </div>
@@ -143,7 +167,11 @@ export default function App() {
             {SERVICES.map((s) => (
               <div key={s.title} className="card service-card">
                 <div className="service-title">{s.title}</div>
-                <p className="service-desc">{s.description}</p>
+                <ul className="service-list">
+                  {s.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>

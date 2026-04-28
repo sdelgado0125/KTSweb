@@ -1,19 +1,31 @@
 /* Site styles: plain CSS (no Tailwind) */
 
+/*
+  Light “heating & cooling” palette on the page:
+  - White / cool gray base
+  - Blue = “cool” → email / written contact
+  - Red = “warm” → phone / call CTAs
+*/
 :root {
-  --bg: #020617; /* slate-950 */
-  --panel: rgba(255, 255, 255, 0.06);
-  --panel-2: rgba(255, 255, 255, 0.045);
-  --border: rgba(255, 255, 255, 0.12);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.72);
-  --muted-2: rgba(255, 255, 255, 0.6);
-  --shadow: 0 20px 60px -25px rgba(0, 0, 0, 0.7);
-  --indigo: #6366f1;
-  --indigo-hover: #818cf8;
-  --ring: rgba(129, 140, 248, 0.65);
+  --bg: #ffffff;
+  --bg-wash-cool: rgba(37, 99, 235, 0.06);
+  --bg-wash-warm: rgba(220, 38, 38, 0.05);
+  --panel: #f8fafc;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #475569;
+  --muted-2: #64748b;
+  --shadow: 0 18px 50px -20px rgba(15, 23, 42, 0.12);
+  --blue: #1d4ed8;
+  --blue-hover: #1e40af;
+  --red: #dc2626;
+  --red-hover: #b91c1c;
+  --ring: rgba(37, 99, 235, 0.45);
+  --ring-warm: rgba(220, 38, 38, 0.45);
+  --accent-cool: #2563eb;
+  --accent-warm: #dc2626;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -35,7 +47,7 @@ body {
 }
 
 ::selection {
-  background: rgba(99, 102, 241, 0.28);
+  background: rgba(37, 99, 235, 0.18);
 }
 
 a {
@@ -57,18 +69,19 @@ a:hover {
 
 .page {
   min-height: 100svh;
-  background:
-    radial-gradient(900px 500px at 20% -20%, rgba(99, 102, 241, 0.45), transparent 60%),
-    radial-gradient(700px 400px at 85% 0%, rgba(14, 165, 233, 0.25), transparent 55%),
-    radial-gradient(800px 500px at 50% 115%, rgba(168, 85, 247, 0.18), transparent 55%);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 420px at 12% -10%, var(--bg-wash-cool), transparent 58%),
+    radial-gradient(700px 380px at 92% -5%, var(--bg-wash-warm), transparent 55%),
+    radial-gradient(800px 480px at 50% 108%, rgba(37, 99, 235, 0.04), transparent 52%);
 }
 
 .header {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(2, 6, 23, 0.72);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(14px);
 }
 
@@ -87,15 +100,21 @@ a:hover {
 }
 
 .brand-mark {
-  height: 36px;
-  width: 36px;
+  height: 45px;
+  width: 45px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  font-size: 12px;
+  border-radius: 15px;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.brand-logo {
+  width: 150%;
+  height: 150%;
+  object-fit: cover;
 }
 
 .brand-name {
@@ -114,11 +133,11 @@ a:hover {
   display: none;
   gap: 18px;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
 }
 
 .nav a:hover {
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--blue);
   text-decoration: none;
 }
 
@@ -146,24 +165,31 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* Warm: primary action = call */
 .btn-primary {
-  background: var(--indigo);
-  color: white;
+  background: var(--red);
+  color: #fff;
 }
 
 .btn-primary:hover {
-  background: var(--indigo-hover);
+  background: var(--red-hover);
   text-decoration: none;
 }
 
+.btn-primary:focus-visible {
+  outline-color: var(--ring-warm);
+}
+
+/* Cool: secondary = email */
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.92);
+  background: #fff;
+  border-color: rgba(37, 99, 235, 0.4);
+  color: var(--blue);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(37, 99, 235, 0.06);
+  border-color: var(--blue);
   text-decoration: none;
 }
 
@@ -181,12 +207,30 @@ a:hover {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  background: var(--panel);
   padding: 6px 10px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--muted);
   font-weight: 600;
+}
+
+.badges .badge:nth-child(1) {
+  border-color: rgba(37, 99, 235, 0.25);
+  background: rgba(37, 99, 235, 0.08);
+  color: #1e40af;
+}
+
+.badges .badge:nth-child(2) {
+  border-color: rgba(220, 38, 38, 0.22);
+  background: rgba(220, 38, 38, 0.06);
+  color: #b91c1c;
+}
+
+.badges .badge:nth-child(3) {
+  border-color: rgba(37, 99, 235, 0.2);
+  background: rgba(241, 245, 249, 0.9);
+  color: var(--muted);
 }
 
 .hero {
@@ -201,6 +245,7 @@ a:hover {
   font-size: 38px;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  color: var(--text);
 }
 
 .hero-subtitle {
@@ -225,8 +270,8 @@ a:hover {
 }
 
 .card {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  background: #fff;
   border-radius: 18px;
   box-shadow: var(--shadow);
 }
@@ -238,13 +283,14 @@ a:hover {
 .card-title {
   font-weight: 800;
   font-size: 14px;
+  color: var(--text);
 }
 
 .checklist {
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
   display: grid;
   gap: 10px;
   font-size: 13px;
@@ -264,15 +310,22 @@ a:hover {
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #34d399; /* emerald-400 */
   margin-top: 5px;
+}
+
+.checklist li:nth-child(odd)::before {
+  background: var(--accent-cool);
+}
+
+.checklist li:nth-child(even)::before {
+  background: var(--accent-warm);
 }
 
 .mini-card {
   margin-top: 16px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border);
+  background: var(--panel);
   padding: 12px;
 }
 
@@ -280,7 +333,7 @@ a:hover {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--muted-2);
   font-weight: 800;
 }
 
@@ -292,8 +345,16 @@ a:hover {
 }
 
 .mini-links a {
-  color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
+  font-weight: 600;
+}
+
+.mini-links a[href^='tel:'] {
+  color: var(--red);
+}
+
+.mini-links a[href^='mailto:'] {
+  color: var(--blue);
 }
 
 .mini-links a:hover {
@@ -309,6 +370,7 @@ a:hover {
   margin: 0;
   font-size: 26px;
   letter-spacing: -0.01em;
+  color: var(--text);
 }
 
 .section-head {
@@ -338,6 +400,7 @@ a:hover {
 .service-title {
   font-weight: 800;
   font-size: 16px;
+  color: var(--text);
 }
 
 .service-desc {
@@ -345,6 +408,22 @@ a:hover {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
+}
+
+.service-list {
+  margin: 12px 0 0;
+  padding-left: 1.15rem;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.service-list li {
+  margin-bottom: 6px;
+}
+
+.service-list li:last-child {
+  margin-bottom: 0;
 }
 
 .pad {
@@ -375,12 +454,22 @@ a:hover {
 
 .pill {
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  background: var(--panel);
   padding: 12px 14px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.86);
+  color: var(--text);
   font-size: 13px;
+}
+
+.audience .pill:nth-child(4n + 1),
+.audience .pill:nth-child(4n + 3) {
+  border-left: 3px solid var(--accent-cool);
+}
+
+.audience .pill:nth-child(4n + 2),
+.audience .pill:nth-child(4n + 4) {
+  border-left: 3px solid var(--accent-warm);
 }
 
 .contact {
@@ -403,9 +492,16 @@ a:hover {
   display: block;
   font-size: 16px;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.95);
   text-decoration: none;
   word-break: break-word;
+}
+
+.big-link[href^='tel:'] {
+  color: var(--red);
+}
+
+.big-link[href^='mailto:'] {
+  color: var(--blue);
 }
 
 .big-link:hover {
@@ -415,12 +511,12 @@ a:hover {
 .footer {
   margin-top: 16px;
   padding: 22px 2px 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--muted-2);
   font-size: 13px;
 }
 
 .footer-inner {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border);
   padding-top: 16px;
   display: flex;
   flex-direction: column;
@@ -435,10 +531,12 @@ a:hover {
 
 .footer-links a {
   text-decoration: none;
+  color: var(--muted);
 }
 
 .footer-links a:hover {
   text-decoration: underline;
+  color: var(--blue);
 }
 
 @media (min-width: 760px) {
