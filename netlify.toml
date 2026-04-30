@@ -1,0 +1,14 @@
+# Netlify: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback: unknown paths still load the app (Vite + React)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
