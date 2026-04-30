@@ -14,7 +14,7 @@ const STRINGS = {
     langToggleLabel: 'Language',
     navAbout: 'About',
     navServices: 'Services',
-    navWho: 'Who we serve',
+    navWho: 'Proudly serving',
     navContact: 'Contact',
     brandSub: 'Home services • Property support',
     badgeFamily: 'Family-owned',
@@ -38,7 +38,7 @@ const STRINGS = {
     servicesTitle: 'Services',
     servicesSubtitle:
       'Skilled trades, home maintenance, commercial cleaning, and valet trash for properties of all sizes.',
-    whoTitle: 'Who we serve',
+    whoTitle: 'Proudly serving',
     whoDesc:
       'From single-family homes to apartment communities, we show up ready to solve problems and keep properties running smoothly.',
     ctaTitle: 'Ready to schedule service?',
@@ -83,7 +83,7 @@ const STRINGS = {
     langToggleLabel: 'Idioma',
     navAbout: 'Sobre nosotros',
     navServices: 'Servicios',
-    navWho: 'A quién servimos',
+    navWho: 'Servimos con orgullo',
     navContact: 'Contacto',
     brandSub: 'Servicios para el hogar • Apoyo para propiedades',
     badgeFamily: 'Negocio familiar',
@@ -109,7 +109,7 @@ const STRINGS = {
     servicesTitle: 'Servicios',
     servicesSubtitle:
       'Oficios especializados, mantenimiento del hogar, limpieza comercial y valet trash para propiedades de todos los tamaños.',
-    whoTitle: 'A quién servimos',
+    whoTitle: 'Servimos con orgullo',
     whoDesc:
       'Desde casas unifamiliares hasta comunidades de apartamentos, llegamos listos para resolver problemas y mantener las propiedades funcionando sin contratiempos.',
     ctaTitle: '¿Listo para agendar servicio?',
