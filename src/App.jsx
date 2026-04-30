@@ -19,7 +19,7 @@ const STRINGS = {
     brandSub: 'Home services • Property support',
     badgeFamily: 'Family-owned',
     badgeFast: 'Fast response',
-    badgeExp: '20+ years experience',
+    badgeExp: '35+ years of experience',
     heroTitle: 'Quality repairs and dependable property support—done right, the first time.',
     heroSubtitle:
       'We help homeowners, renters, Airbnb hosts, and multi-unit properties with AC repair, plumbing, HVAC troubleshooting, general maintenance, cleaning/painting, and valet trash services for apartment communities.',
@@ -88,7 +88,7 @@ const STRINGS = {
     brandSub: 'Servicios para el hogar • Apoyo para propiedades',
     badgeFamily: 'Negocio familiar',
     badgeFast: 'Respuesta rápida',
-    badgeExp: 'Más de 20 años de experiencia',
+    badgeExp: 'Más de 35 años de experiencia',
     heroTitle:
       'Reparaciones de calidad y apoyo confiable para propiedades—bien hecho desde la primera vez.',
     heroSubtitle:
