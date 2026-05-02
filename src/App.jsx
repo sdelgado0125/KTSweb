@@ -1,5 +1,6 @@
 import './styles.css'
 import { useEffect, useMemo, useState } from 'react'
+import RequestModal from './RequestModal.jsx'
 
 const COMPANY = {
   name: 'KTS General Solution LLC',
@@ -50,6 +51,51 @@ const STRINGS = {
     callBtn: 'Call',
     emailFull: (email) => `Email ${email}`,
     callFull: (phone) => `Call ${phone}`,
+    requestModalOpenBtn: 'Request service',
+    requestModalTitle: 'Request service',
+    requestModalLead:
+      'Tell us what you need. We may call to confirm details and answer questions before we schedule a visit.',
+    requestModalName: 'Full name',
+    requestModalPhone: 'Phone',
+    requestModalEmail: 'Email',
+    requestModalService: 'Service type',
+    requestModalServicePlaceholder: 'Select a service…',
+    requestModalAddress: 'Service address or area',
+    requestModalDescription: 'Describe the job',
+    requestModalFiles: 'Photos or documents (optional)',
+    requestModalFilesHint: 'Up to 5 files, images or PDF, max 4 MB each.',
+    requestModalConsent:
+      'I understand KTS may contact me by phone or email to confirm details or ask follow-up questions.',
+    requestModalSubmit: 'Send request',
+    requestModalSubmitting: 'Sending…',
+    requestModalCancel: 'Cancel',
+    requestModalClose: 'Close dialog',
+    requestModalDone: 'Done',
+    requestModalSuccessTitle: 'Request received',
+    requestModalSuccessBody:
+      'Thank you. We received your request and will follow up soon. We may call to confirm the details. You can also reach us directly by phone or email anytime.',
+    requestModalErrorGeneric: 'Something went wrong. Please try again or call us.',
+    requestModalConfigError:
+      'Form email is not configured yet. Add VITE_WEB3FORMS_ACCESS_KEY (see .env.example).',
+    requestModalConsentError: 'Please check the box to continue.',
+    requestModalTooManyFiles: 'Please attach at most 5 files.',
+    requestModalFileTooBig: 'Each file must be 4 MB or smaller.',
+    requestModalEmailSubjectPrefix: '[KTS Web]',
+    requestModalEmailServiceLine: 'Service',
+    requestModalEmailAddressLine: 'Address / area',
+    requestModalEmailDetailsLine: 'Details',
+    requestModalEmailPhoneLine: 'Phone',
+    requestModalFine:
+      'Submissions go to {email}. You can reply from that thread after we respond, or contact us directly.',
+    requestServiceOptions: [
+      { value: 'ac-hvac', label: 'AC Repair & HVAC Services' },
+      { value: 'plumbing', label: 'Plumbing Services' },
+      { value: 'handyman', label: 'Home Maintenance & Handyman Work' },
+      { value: 'cleaning', label: 'Building Cleaning Services' },
+      { value: 'pressure', label: 'Pressure Washing' },
+      { value: 'valet', label: 'Valet Trash Services' },
+      { value: 'other', label: 'Other / General' },
+    ],
     audiences: ['Homeowners & renters', 'Airbnb / short-term rental hosts', 'Multi-unit properties', 'Apartment communities'],
     services: [
       {
@@ -122,6 +168,51 @@ const STRINGS = {
     callBtn: 'Llamar',
     emailFull: (email) => `Correo ${email}`,
     callFull: (phone) => `Llamar ${phone}`,
+    requestModalOpenBtn: 'Solicitar servicio',
+    requestModalTitle: 'Solicitar servicio',
+    requestModalLead:
+      'Cuéntenos qué necesita. Podemos llamar para confirmar detalles y responder preguntas antes de programar la visita.',
+    requestModalName: 'Nombre completo',
+    requestModalPhone: 'Teléfono',
+    requestModalEmail: 'Correo electrónico',
+    requestModalService: 'Tipo de servicio',
+    requestModalServicePlaceholder: 'Seleccione un servicio…',
+    requestModalAddress: 'Dirección o zona del servicio',
+    requestModalDescription: 'Describa el trabajo',
+    requestModalFiles: 'Fotos o documentos (opcional)',
+    requestModalFilesHint: 'Hasta 5 archivos, imágenes o PDF, máx. 4 MB c/u.',
+    requestModalConsent:
+      'Entiendo que KTS puede contactarme por teléfono o correo para confirmar detalles o hacer preguntas.',
+    requestModalSubmit: 'Enviar solicitud',
+    requestModalSubmitting: 'Enviando…',
+    requestModalCancel: 'Cancelar',
+    requestModalClose: 'Cerrar ventana',
+    requestModalDone: 'Listo',
+    requestModalSuccessTitle: 'Solicitud recibida',
+    requestModalSuccessBody:
+      'Gracias. Recibimos su solicitud y nos comunicaremos pronto. Podemos llamar para confirmar los detalles. También puede llamarnos o escribirnos cuando quiera.',
+    requestModalErrorGeneric: 'Algo salió mal. Inténtelo de nuevo o llámenos.',
+    requestModalConfigError:
+      'El formulario aún no está configurado. Agregue VITE_WEB3FORMS_ACCESS_KEY (vea .env.example).',
+    requestModalConsentError: 'Marque la casilla para continuar.',
+    requestModalTooManyFiles: 'Adjunte como máximo 5 archivos.',
+    requestModalFileTooBig: 'Cada archivo debe ser de 4 MB o menos.',
+    requestModalEmailSubjectPrefix: '[KTS Web]',
+    requestModalEmailServiceLine: 'Servicio',
+    requestModalEmailAddressLine: 'Dirección / zona',
+    requestModalEmailDetailsLine: 'Detalles',
+    requestModalEmailPhoneLine: 'Teléfono',
+    requestModalFine:
+      'Las solicitudes se envían a {email}. Puede responder en ese hilo cuando le escribamos, o contactarnos directamente.',
+    requestServiceOptions: [
+      { value: 'ac-hvac', label: 'Reparación de A/C y Servicios HVAC' },
+      { value: 'plumbing', label: 'Servicios de Plomería' },
+      { value: 'handyman', label: 'Mantenimiento del Hogar y Handyman' },
+      { value: 'cleaning', label: 'Servicios de Limpieza de Edificios' },
+      { value: 'pressure', label: 'Lavado a Presión' },
+      { value: 'valet', label: 'Servicio de Valet Trash' },
+      { value: 'other', label: 'Otro / General' },
+    ],
     audiences: ['Propietarios e inquilinos', 'Anfitriones de Airbnb / alquileres a corto plazo', 'Propiedades multifamiliares', 'Comunidades de apartamentos'],
     services: [
       {
@@ -185,6 +276,7 @@ function EmailLink({ className = 'btn btn-secondary', children, label }) {
 
 export default function App() {
   const [lang, setLang] = useState(() => getInitialLang())
+  const [requestOpen, setRequestOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('kts.lang', lang)
@@ -236,6 +328,13 @@ export default function App() {
             <EmailLink className="btn btn-secondary" label={s.emailBtn}>
               {s.emailBtn}
             </EmailLink>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => setRequestOpen(true)}
+            >
+              {s.requestModalOpenBtn}
+            </button>
             <PhoneLink className="btn btn-primary" label={s.callBtn}>
               {s.callBtn}
             </PhoneLink>
@@ -256,6 +355,13 @@ export default function App() {
             <p className="hero-subtitle">{s.heroSubtitle}</p>
 
             <div className="hero-actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setRequestOpen(true)}
+              >
+                {s.requestModalOpenBtn}
+              </button>
               <PhoneLink label={s.callFull(COMPANY.phoneDisplay)} />
               <EmailLink label={s.emailFull(COMPANY.email)} />
             </div>
@@ -344,6 +450,13 @@ export default function App() {
               <p className="muted">{s.ctaDesc}</p>
 
               <div className="hero-actions">
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => setRequestOpen(true)}
+                >
+                  {s.requestModalOpenBtn}
+                </button>
                 <PhoneLink label={s.callFull(COMPANY.phoneDisplay)} />
                 <EmailLink label={s.emailFull(COMPANY.email)} />
               </div>
@@ -380,6 +493,13 @@ export default function App() {
           </footer>
         </section>
       </main>
+
+      <RequestModal
+        open={requestOpen}
+        onClose={() => setRequestOpen(false)}
+        copy={s}
+        companyEmail={COMPANY.email}
+      />
     </div>
   )
 }
