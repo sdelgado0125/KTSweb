@@ -1,5 +1,12 @@
 import './styles.css'
-import { useEffect, useMemo, useState } from 'react'
+import {
+  startTransition,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import RequestModal from './RequestModal.jsx'
 
 const COMPANY = {
@@ -13,9 +20,11 @@ const STRINGS = {
   en: {
     langName: 'English',
     langToggleLabel: 'Language',
-    navAbout: 'About',
+    menuOpenAria: 'Open menu',
+    menuCloseAria: 'Close menu',
+    navAbout: 'About the owner',
     navServices: 'Services',
-    navWho: 'Proudly serving',
+    navWho: 'Proudly Serving',
     navContact: 'Contact',
     brandSub: 'Home services • Property support',
     badgeFamily: 'Family-owned',
@@ -30,7 +39,7 @@ const STRINGS = {
     expect2: 'Quality workmanship with a clean, professional finish',
     expect3: 'Dependable support for recurring property needs',
     contactLabel: 'Contact',
-    aboutTitle: 'About us',
+    aboutTitle: 'About the owner',
     aboutKicker: 'Family-owned. Technician-led.',
     aboutFounderName: 'Jorge Delgado',
     aboutFounderRole: 'Founder • Lead Technician',
@@ -39,7 +48,7 @@ const STRINGS = {
     servicesTitle: 'Services',
     servicesSubtitle:
       'Skilled trades, home maintenance, commercial cleaning, and valet trash for properties of all sizes.',
-    whoTitle: 'Proudly serving',
+    whoTitle: 'Proudly Serving',
     whoDesc:
       'From single-family homes to apartment communities, we show up ready to solve problems and keep properties running smoothly.',
     ctaTitle: 'Ready to schedule service?',
@@ -48,7 +57,7 @@ const STRINGS = {
     phoneLabel: 'Phone',
     emailLabel: 'Email',
     emailBtn: 'Email',
-    callBtn: 'Call',
+    callBtn: 'Call us',
     emailFull: (email) => `Email ${email}`,
     callFull: (phone) => `Call ${phone}`,
     requestModalOpenBtn: 'Request service',
@@ -62,8 +71,8 @@ const STRINGS = {
     requestModalServicePlaceholder: 'Select a service…',
     requestModalAddress: 'Service address or area',
     requestModalDescription: 'Describe the job',
-    requestModalFiles: 'Photos or documents (optional)',
-    requestModalFilesHint: 'Up to 5 files, images or PDF, max 4 MB each.',
+    requestModalDescribePhotosHint:
+      'If you have photos, describe the issue here first—we often ask customers to text or email pictures after we respond.',
     requestModalConsent:
       'I understand KTS may contact me by phone or email to confirm details or ask follow-up questions.',
     requestModalSubmit: 'Send request',
@@ -76,17 +85,19 @@ const STRINGS = {
       'Thank you. We received your request and will follow up soon. We may call to confirm the details. You can also reach us directly by phone or email anytime.',
     requestModalErrorGeneric: 'Something went wrong. Please try again or call us.',
     requestModalConfigError:
-      'Form email is not configured yet. Add VITE_WEB3FORMS_ACCESS_KEY (see .env.example).',
+      'Web3Forms key is missing. Open the `.env` file in this project folder, paste your key right after `VITE_WEB3FORMS_ACCESS_KEY=` (no spaces), save, then restart `npm run dev`. Get a free key at web3forms.com. Live site: Netlify → Environment variables → same name → redeploy.',
     requestModalConsentError: 'Please check the box to continue.',
-    requestModalTooManyFiles: 'Please attach at most 5 files.',
-    requestModalFileTooBig: 'Each file must be 4 MB or smaller.',
+    requestModalPhoneInvalid: 'Please enter a 10-digit phone number (only numbers; dashes or spaces are OK).',
+    requestModalEmailInvalid:
+      'Please enter a valid email address in the format name@example.com (include @ and a domain such as .com).',
     requestModalEmailSubjectPrefix: '[KTS Web]',
     requestModalEmailServiceLine: 'Service',
     requestModalEmailAddressLine: 'Address / area',
     requestModalEmailDetailsLine: 'Details',
     requestModalEmailPhoneLine: 'Phone',
+    requestModalEmailCompanyLine: 'Company inbox (set this in Web3Forms dashboard)',
     requestModalFine:
-      'Submissions go to {email}. You can reply from that thread after we respond, or contact us directly.',
+      'Web3Forms delivers mail to the inbox set in your web3forms.com dashboard for this form key—it should be {email}. The customer’s email is used as Reply-To so you can respond directly.',
     requestServiceOptions: [
       { value: 'ac-hvac', label: 'AC Repair & HVAC Services' },
       { value: 'plumbing', label: 'Plumbing Services' },
@@ -127,9 +138,11 @@ const STRINGS = {
   es: {
     langName: 'Español',
     langToggleLabel: 'Idioma',
-    navAbout: 'Sobre nosotros',
+    menuOpenAria: 'Abrir menú',
+    menuCloseAria: 'Cerrar menú',
+    navAbout: 'Sobre el dueño',
     navServices: 'Servicios',
-    navWho: 'Servimos con orgullo',
+    navWho: 'Servimos con Orgullo',
     navContact: 'Contacto',
     brandSub: 'Servicios para el hogar • Apoyo para propiedades',
     badgeFamily: 'Negocio familiar',
@@ -146,7 +159,7 @@ const STRINGS = {
     expect2: 'Trabajo de calidad con un acabado limpio y profesional',
     expect3: 'Apoyo confiable para necesidades recurrentes de la propiedad',
     contactLabel: 'Contacto',
-    aboutTitle: 'Sobre nosotros',
+    aboutTitle: 'Sobre el dueño',
     aboutKicker: 'Negocio familiar. Liderado por técnicos.',
     aboutFounderName: 'Jorge Delgado',
     aboutFounderRole: 'Fundador • Técnico principal',
@@ -155,7 +168,7 @@ const STRINGS = {
     servicesTitle: 'Servicios',
     servicesSubtitle:
       'Oficios especializados, mantenimiento del hogar, limpieza comercial y valet trash para propiedades de todos los tamaños.',
-    whoTitle: 'Servimos con orgullo',
+    whoTitle: 'Servimos con Orgullo',
     whoDesc:
       'Desde casas unifamiliares hasta comunidades de apartamentos, llegamos listos para resolver problemas y mantener las propiedades funcionando sin contratiempos.',
     ctaTitle: '¿Listo para agendar servicio?',
@@ -165,7 +178,7 @@ const STRINGS = {
     phoneLabel: 'Teléfono',
     emailLabel: 'Correo',
     emailBtn: 'Correo',
-    callBtn: 'Llamar',
+    callBtn: 'Llámenos',
     emailFull: (email) => `Correo ${email}`,
     callFull: (phone) => `Llamar ${phone}`,
     requestModalOpenBtn: 'Solicitar servicio',
@@ -179,8 +192,8 @@ const STRINGS = {
     requestModalServicePlaceholder: 'Seleccione un servicio…',
     requestModalAddress: 'Dirección o zona del servicio',
     requestModalDescription: 'Describa el trabajo',
-    requestModalFiles: 'Fotos o documentos (opcional)',
-    requestModalFilesHint: 'Hasta 5 archivos, imágenes o PDF, máx. 4 MB c/u.',
+    requestModalDescribePhotosHint:
+      'Si tiene fotos, describa primero el problema aquí—luego podemos pedirle que envíe imágenes por mensaje o correo.',
     requestModalConsent:
       'Entiendo que KTS puede contactarme por teléfono o correo para confirmar detalles o hacer preguntas.',
     requestModalSubmit: 'Enviar solicitud',
@@ -193,17 +206,20 @@ const STRINGS = {
       'Gracias. Recibimos su solicitud y nos comunicaremos pronto. Podemos llamar para confirmar los detalles. También puede llamarnos o escribirnos cuando quiera.',
     requestModalErrorGeneric: 'Algo salió mal. Inténtelo de nuevo o llámenos.',
     requestModalConfigError:
-      'El formulario aún no está configurado. Agregue VITE_WEB3FORMS_ACCESS_KEY (vea .env.example).',
+      'Falta la clave de Web3Forms. Abra `.env` en esta carpeta del proyecto, pegue la clave después de `VITE_WEB3FORMS_ACCESS_KEY=` (sin espacios), guarde y reinicie `npm run dev`. Clave gratuita en web3forms.com. Sitio en vivo: Netlify → Variables de entorno → mismo nombre → publicar de nuevo.',
     requestModalConsentError: 'Marque la casilla para continuar.',
-    requestModalTooManyFiles: 'Adjunte como máximo 5 archivos.',
-    requestModalFileTooBig: 'Cada archivo debe ser de 4 MB o menos.',
+    requestModalPhoneInvalid:
+      'Ingrese un número de teléfono de 10 dígitos (solo números; puede usar guiones o espacios).',
+    requestModalEmailInvalid:
+      'Ingrese un correo válido con el formato nombre@ejemplo.com (incluya @ y un dominio como .com).',
     requestModalEmailSubjectPrefix: '[KTS Web]',
     requestModalEmailServiceLine: 'Servicio',
     requestModalEmailAddressLine: 'Dirección / zona',
     requestModalEmailDetailsLine: 'Detalles',
     requestModalEmailPhoneLine: 'Teléfono',
+    requestModalEmailCompanyLine: 'Correo de la empresa (configúrelo en el panel de Web3Forms)',
     requestModalFine:
-      'Las solicitudes se envían a {email}. Puede responder en ese hilo cuando le escribamos, o contactarnos directamente.',
+      'Web3Forms envía el correo al buzón configurado en web3forms.com para esta clave—debería ser {email}. El correo del cliente se usa como “Responder a” para que pueda contestarle directamente.',
     requestServiceOptions: [
       { value: 'ac-hvac', label: 'Reparación de A/C y Servicios HVAC' },
       { value: 'plumbing', label: 'Servicios de Plomería' },
@@ -277,21 +293,178 @@ function EmailLink({ className = 'btn btn-secondary', children, label }) {
 export default function App() {
   const [lang, setLang] = useState(() => getInitialLang())
   const [requestOpen, setRequestOpen] = useState(false)
+  const [navOpen, setNavOpen] = useState(false)
+  const headerRef = useRef(null)
+
+  useLayoutEffect(() => {
+    const el = headerRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return undefined
+
+    function syncHeaderHeight() {
+      const h = Math.ceil(el.getBoundingClientRect().height)
+      document.documentElement.style.setProperty('--header-h', `${h}px`)
+    }
+
+    syncHeaderHeight()
+    const ro = new ResizeObserver(syncHeaderHeight)
+    ro.observe(el)
+    window.addEventListener('resize', syncHeaderHeight)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', syncHeaderHeight)
+      document.documentElement.style.removeProperty('--header-h')
+    }
+  }, [lang])
 
   useEffect(() => {
     localStorage.setItem('kts.lang', lang)
     document.documentElement.lang = lang
   }, [lang])
 
+  useEffect(() => {
+    function onResize() {
+      if (window.innerWidth >= 760) setNavOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  useEffect(() => {
+    if (!navOpen) return
+    function onKey(e) {
+      if (e.key === 'Escape') setNavOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [navOpen])
+
+  useEffect(() => {
+    if (!navOpen || typeof window === 'undefined') return
+    if (window.innerWidth >= 760) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [navOpen])
+
   const s = useMemo(() => STRINGS[lang], [lang])
   const services = s.services
   const audiences = s.audiences
 
+  const serviceCardRefs = useRef([])
+  const [serviceVisible, setServiceVisible] = useState(null)
+  const [serviceIoKey, setServiceIoKey] = useState(0)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 760px)')
+    const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const bump = () => setServiceIoKey((k) => k + 1)
+    mq.addEventListener('change', bump)
+    mqReduce.addEventListener('change', bump)
+    return () => {
+      mq.removeEventListener('change', bump)
+      mqReduce.removeEventListener('change', bump)
+    }
+  }, [])
+
+  useLayoutEffect(() => {
+    serviceCardRefs.current = serviceCardRefs.current.slice(0, services.length)
+  }, [services.length])
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !window.IntersectionObserver) {
+      startTransition(() => {
+        setServiceVisible(new Set(services.map((_, i) => i)))
+      })
+      return undefined
+    }
+
+    const mq = window.matchMedia('(min-width: 760px)')
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (!mq.matches || reduceMotion) {
+      startTransition(() => {
+        setServiceVisible(new Set(services.map((_, i) => i)))
+      })
+      return undefined
+    }
+
+    startTransition(() => {
+      setServiceVisible(new Set())
+    })
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setServiceVisible((prev) => {
+          const next = new Set(prev ?? [])
+          for (const entry of entries) {
+            const i = Number(entry.target.dataset.serviceIndex)
+            if (Number.isNaN(i)) continue
+            if (entry.isIntersecting) next.add(i)
+            else next.delete(i)
+          }
+          return next
+        })
+      },
+      {
+        threshold: [0, 0.08, 0.15, 0.25],
+        rootMargin: '0px 0px -7% 0px',
+      },
+    )
+
+    const nodes = serviceCardRefs.current.filter(Boolean)
+    for (const el of nodes) {
+      observer.observe(el)
+    }
+
+    return () => {
+      for (const el of nodes) {
+        observer.unobserve(el)
+      }
+      observer.disconnect()
+    }
+  }, [lang, services, serviceIoKey])
+
+  const audienceRef = useRef(null)
+  const [audienceInView, setAudienceInView] = useState(false)
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !window.IntersectionObserver) {
+      startTransition(() => setAudienceInView(true))
+      return undefined
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      startTransition(() => setAudienceInView(true))
+      return undefined
+    }
+
+    const el = audienceRef.current
+    if (!el) return undefined
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry) return
+        startTransition(() => setAudienceInView(entry.isIntersecting))
+      },
+      {
+        threshold: [0, 0.12, 0.2],
+        rootMargin: '0px 0px -6% 0px',
+      },
+    )
+
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+    }
+  }, [lang])
+
   return (
     <div className="page">
-      <header className="header">
+      <header ref={headerRef} className="header">
         <div className="container header-inner">
-          <a href="#top" className="brand">
+          <a href="#top" className="brand" onClick={() => setNavOpen(false)}>
             <div className="brand-mark" aria-hidden="true">
               <img className="brand-logo" src="/kts-logo.png" alt="" />
             </div>
@@ -301,43 +474,82 @@ export default function App() {
             </div>
           </a>
 
-          <nav className="nav">
-            <a href="#about">{s.navAbout}</a>
-            <a href="#services">{s.navServices}</a>
-            <a href="#who-we-serve">{s.navWho}</a>
-            <a href="#contact">{s.navContact}</a>
-          </nav>
+          <button
+            type="button"
+            className={`header-menu-toggle ${navOpen ? 'is-open' : ''}`}
+            aria-expanded={navOpen}
+            aria-controls="primary-navigation"
+            aria-label={navOpen ? s.menuCloseAria : s.menuOpenAria}
+            onClick={() => setNavOpen((open) => !open)}
+          >
+            <span className="header-menu-bars" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className="header-menu-close" aria-hidden="true">
+              ×
+            </span>
+          </button>
 
-          <div className="header-cta">
-            <div className="lang-toggle" role="group" aria-label={s.langToggleLabel}>
+          {navOpen ? (
+            <div
+              className="header-menu-backdrop"
+              aria-hidden
+              onClick={() => setNavOpen(false)}
+            />
+          ) : null}
+
+          <div
+            id="primary-navigation"
+            className={`header-links ${navOpen ? 'is-open' : ''}`}
+          >
+            <nav className="nav">
+              <a href="#services" onClick={() => setNavOpen(false)}>
+                {s.navServices}
+              </a>
+              <a href="#who-we-serve" onClick={() => setNavOpen(false)}>
+                {s.navWho}
+              </a>
+              <a href="#about" onClick={() => setNavOpen(false)}>
+                {s.navAbout}
+              </a>
+              <a href="#contact" onClick={() => setNavOpen(false)}>
+                {s.navContact}
+              </a>
+            </nav>
+
+            <div className="header-cta">
+              <div className="lang-toggle" role="group" aria-label={s.langToggleLabel}>
+                <button
+                  type="button"
+                  className={`lang-btn ${lang === 'en' ? 'is-active' : ''}`}
+                  onClick={() => setLang('en')}
+                >
+                  EN
+                </button>
+                <button
+                  type="button"
+                  className={`lang-btn ${lang === 'es' ? 'is-active' : ''}`}
+                  onClick={() => setLang('es')}
+                >
+                  ES
+                </button>
+              </div>
               <button
                 type="button"
-                className={`lang-btn ${lang === 'en' ? 'is-active' : ''}`}
-                onClick={() => setLang('en')}
+                className="btn btn-ghost"
+                onClick={() => {
+                  setRequestOpen(true)
+                  setNavOpen(false)
+                }}
               >
-                EN
+                {s.requestModalOpenBtn}
               </button>
-              <button
-                type="button"
-                className={`lang-btn ${lang === 'es' ? 'is-active' : ''}`}
-                onClick={() => setLang('es')}
-              >
-                ES
-              </button>
+              <PhoneLink className="btn btn-primary" label={s.callBtn}>
+                {s.callBtn}
+              </PhoneLink>
             </div>
-            <EmailLink className="btn btn-secondary" label={s.emailBtn}>
-              {s.emailBtn}
-            </EmailLink>
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => setRequestOpen(true)}
-            >
-              {s.requestModalOpenBtn}
-            </button>
-            <PhoneLink className="btn btn-primary" label={s.callBtn}>
-              {s.callBtn}
-            </PhoneLink>
           </div>
         </div>
       </header>
@@ -363,7 +575,6 @@ export default function App() {
                 {s.requestModalOpenBtn}
               </button>
               <PhoneLink label={s.callFull(COMPANY.phoneDisplay)} />
-              <EmailLink label={s.emailFull(COMPANY.email)} />
             </div>
 
             <div className="hero-note">
@@ -383,26 +594,9 @@ export default function App() {
               <div className="mini-label">{s.contactLabel}</div>
               <div className="mini-links">
                 <a href={`tel:${COMPANY.phoneE164}`}>{COMPANY.phoneDisplay}</a>
-                <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>
               </div>
             </div>
           </aside>
-        </section>
-
-        <section id="about" className="section">
-          <div className="card pad about">
-            <div className="about-head">
-              <div>
-                <h2>{s.aboutTitle}</h2>
-                <p className="muted">{s.aboutKicker}</p>
-              </div>
-            </div>
-            <div className="founder">
-              <div className="founder-name">{s.aboutFounderName}</div>
-              <div className="founder-role">{s.aboutFounderRole}</div>
-            </div>
-            <p className="about-body">{s.aboutBody}</p>
-          </div>
         </section>
 
         <section id="services" className="section">
@@ -414,9 +608,19 @@ export default function App() {
             <PhoneLink label={s.callFull(COMPANY.phoneDisplay)} />
           </div>
 
-          <div className="grid">
-            {services.map((svc) => (
-              <div key={svc.title} className="card service-card">
+          <div className="grid services-grid">
+            {services.map((svc, i) => (
+              <div
+                key={svc.title}
+                ref={(el) => {
+                  serviceCardRefs.current[i] = el
+                }}
+                className={`card service-card ${
+                  serviceVisible === null || serviceVisible.has(i) ? 'service-card--inview' : ''
+                }`}
+                data-service-index={i}
+                style={{ '--service-stagger': i }}
+              >
                 <div className="service-title">{svc.title}</div>
                 <ul className="service-list">
                   {svc.items.map((item) => (
@@ -433,12 +637,44 @@ export default function App() {
             <h2>{s.whoTitle}</h2>
             <p className="muted maxw">{s.whoDesc}</p>
 
-            <div className="audience">
-              {audiences.map((a) => (
-                <div key={a} className="pill">
+            <div
+              ref={audienceRef}
+              className={`audience ${audienceInView ? 'audience--inview' : ''}`}
+            >
+              {audiences.map((a, i) => (
+                <div key={a} className="pill" style={{ '--pill-i': i }}>
                   {a}
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className="section">
+          <div className="card pad about">
+            <div className="about-layout">
+              <div className="about-head">
+                <div>
+                  <h2>{s.aboutTitle}</h2>
+                  <p className="muted">{s.aboutKicker}</p>
+                </div>
+              </div>
+              <div className="founder">
+                <div className="founder-name">{s.aboutFounderName}</div>
+                <div className="founder-role">{s.aboutFounderRole}</div>
+              </div>
+              <figure className="about-photo-wrap">
+                <img
+                  className="about-photo"
+                  src="/jorge-delgado.png"
+                  alt={s.aboutFounderName}
+                  width={640}
+                  height={800}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+              <p className="about-body">{s.aboutBody}</p>
             </div>
           </div>
         </section>
@@ -463,30 +699,15 @@ export default function App() {
 
               <p className="fine">{s.ctaNote}</p>
             </div>
-
-            <div className="contact-side">
-              <div className="mini-card">
-                <div className="mini-label">{s.phoneLabel}</div>
-                <a className="big-link" href={`tel:${COMPANY.phoneE164}`}>
-                  {COMPANY.phoneDisplay}
-                </a>
-              </div>
-              <div className="mini-card">
-                <div className="mini-label">{s.emailLabel}</div>
-                <a className="big-link" href={`mailto:${COMPANY.email}`}>
-                  {COMPANY.email}
-                </a>
-              </div>
-            </div>
           </div>
 
           <footer className="footer">
             <div className="footer-inner">
               <div>© {new Date().getFullYear()} {COMPANY.name}</div>
               <div className="footer-links">
-                <a href="#about">{s.navAbout}</a>
                 <a href="#services">{s.navServices}</a>
                 <a href="#who-we-serve">{s.navWho}</a>
+                <a href="#about">{s.navAbout}</a>
                 <a href="#contact">{s.navContact}</a>
               </div>
             </div>

@@ -2,21 +2,10 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react'
 
 const WEB3FORMS_URL = 'https://api.web3forms.com/submit'
 
-function fileToAttachment(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = reader.result
-      if (typeof result !== 'string') {
-        reject(new Error('read failed'))
-        return
-      }
-      const base64 = result.includes(',') ? result.split(',')[1] : result
-      resolve({ filename: file.name, content: base64 })
-    }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
+function isValidEmailFormat(value) {
+  const t = value.trim()
+  if (!t) return false
+  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(t)
 }
 
 export default function RequestModal({ open, onClose, copy, companyEmail }) {
@@ -34,10 +23,9 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
   const [serviceValue, setServiceValue] = useState('')
   const [address, setAddress] = useState('')
   const [description, setDescription] = useState('')
-  const [files, setFiles] = useState(null)
   const [consent, setConsent] = useState(false)
 
-  const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY
+  const accessKey = String(import.meta.env.VITE_WEB3FORMS_ACCESS_KEY ?? '').trim()
 
   const resetForm = useCallback(() => {
     setName('')
@@ -46,7 +34,6 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
     setServiceValue('')
     setAddress('')
     setDescription('')
-    setFiles(null)
     setConsent(false)
   }, [])
 
@@ -103,6 +90,18 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
       return
     }
 
+    const phoneDigits = phone.replace(/\D/g, '')
+    if (phoneDigits.length !== 10) {
+      window.alert(copy.requestModalPhoneInvalid)
+      return
+    }
+
+    const emailTrim = email.trim()
+    if (!isValidEmailFormat(emailTrim)) {
+      window.alert(copy.requestModalEmailInvalid)
+      return
+    }
+
     const serviceLabel =
       copy.requestServiceOptions.find((o) => o.value === serviceValue)?.label ?? serviceValue
 
@@ -113,7 +112,9 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
       `${copy.requestModalEmailDetailsLine}:`,
       description.trim(),
       '',
-      `${copy.requestModalEmailPhoneLine}: ${phone.trim()}`,
+      `${copy.requestModalEmailPhoneLine}: ${phoneDigits}`,
+      '',
+      `${copy.requestModalEmailCompanyLine}: ${companyEmail}`,
     ].join('\n')
 
     setSubmitting(true)
@@ -123,29 +124,10 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
         access_key: accessKey,
         subject: `${copy.requestModalEmailSubjectPrefix} ${serviceLabel}`,
         from_name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
+        email: emailTrim,
+        replyto: emailTrim,
+        phone: phoneDigits,
         message,
-      }
-
-      const fileList = files && files.length ? Array.from(files) : []
-      const maxFiles = 5
-      const maxBytes = 4 * 1024 * 1024
-      if (fileList.length > maxFiles) {
-        setErrorMsg(copy.requestModalTooManyFiles)
-        setSubmitting(false)
-        return
-      }
-      for (const f of fileList) {
-        if (f.size > maxBytes) {
-          setErrorMsg(copy.requestModalFileTooBig)
-          setSubmitting(false)
-          return
-        }
-      }
-
-      if (fileList.length) {
-        payload.attachments = await Promise.all(fileList.map((f) => fileToAttachment(f)))
       }
 
       const res = await fetch(WEB3FORMS_URL, {
@@ -206,8 +188,8 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
           <form className="request-form" onSubmit={handleSubmit} noValidate>
             <p className="modal-lead">{copy.requestModalLead}</p>
 
-            <label className="form-label">
-              {copy.requestModalName}
+            <label className="form-label form-label-required">
+              <span className="form-label-heading">{copy.requestModalName}</span>
               <input
                 ref={firstFieldRef}
                 className="form-input"
@@ -220,21 +202,22 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
               />
             </label>
 
-            <label className="form-label">
-              {copy.requestModalPhone}
+            <label className="form-label form-label-required">
+              <span className="form-label-heading">{copy.requestModalPhone}</span>
               <input
                 className="form-input"
                 name="phone"
                 type="tel"
                 autoComplete="tel"
+                inputMode="numeric"
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
             </label>
 
-            <label className="form-label">
-              {copy.requestModalEmail}
+            <label className="form-label form-label-required">
+              <span className="form-label-heading">{copy.requestModalEmail}</span>
               <input
                 className="form-input"
                 name="email"
@@ -247,7 +230,7 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
             </label>
 
             <label className="form-label">
-              {copy.requestModalService}
+              <span className="form-label-heading">{copy.requestModalService}</span>
               <select
                 className="form-input"
                 name="service"
@@ -265,7 +248,7 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
             </label>
 
             <label className="form-label">
-              {copy.requestModalAddress}
+              <span className="form-label-heading">{copy.requestModalAddress}</span>
               <input
                 className="form-input"
                 name="address"
@@ -277,7 +260,7 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
             </label>
 
             <label className="form-label">
-              {copy.requestModalDescription}
+              <span className="form-label-heading">{copy.requestModalDescription}</span>
               <textarea
                 className="form-input form-textarea"
                 name="description"
@@ -286,19 +269,7 @@ export default function RequestModal({ open, onClose, copy, companyEmail }) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-            </label>
-
-            <label className="form-label">
-              {copy.requestModalFiles}
-              <input
-                className="form-file"
-                name="files"
-                type="file"
-                multiple
-                accept="image/*,.pdf"
-                onChange={(e) => setFiles(e.target.files)}
-              />
-              <span className="form-hint">{copy.requestModalFilesHint}</span>
+              <span className="form-hint">{copy.requestModalDescribePhotosHint}</span>
             </label>
 
             <label className="form-check">
