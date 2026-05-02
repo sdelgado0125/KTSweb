@@ -58,7 +58,7 @@ const STRINGS = {
       },
       {
         title: 'Plumbing Services',
-        items: ['Leak repairs', 'Drain unclogging', 'Faucet and toilet repairs', 'Fixture installations'],
+        items: ['Leak repairs', 'Drain unclogging', 'Faucet and toilet repairs', 'Fixture installations', 'Water Heater Repair', 'Water Heater Installation', 'Water Heater Replacement'],
       },
       {
         title: 'Home Maintenance & Handyman Work',
@@ -130,7 +130,15 @@ const STRINGS = {
       },
       {
         title: 'Servicios de Plomería',
-        items: ['Reparación de fugas', 'Destape de drenajes', 'Reparación de grifos e inodoros', 'Instalación de accesorios'],
+        items: [
+          'Reparación de fugas',
+          'Destape de drenajes',
+          'Reparación de grifos e inodoros',
+          'Instalación de accesorios',
+          'Reparación de calentadores de agua',
+          'Instalación de calentadores de agua',
+          'Reemplazo de calentadores de agua',
+        ],
       },
       {
         title: 'Mantenimiento del Hogar y Handyman',
