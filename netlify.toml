@@ -1,4 +1,7 @@
 # Netlify: https://docs.netlify.com/configure-builds/file-based-configuration/
+#
+# Required for the “Request service” form: set VITE_WEB3FORMS_ACCESS_KEY in the Netlify UI
+# (Site settings → Environment variables). Vite embeds it at build time — redeploy after adding/changing.
 
 [build]
   command = "npm run build"
