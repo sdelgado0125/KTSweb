@@ -352,79 +352,44 @@ export default function App() {
   const services = s.services
   const audiences = s.audiences
 
-  const serviceCardRefs = useRef([])
-  const [serviceVisible, setServiceVisible] = useState(null)
-  const [serviceIoKey, setServiceIoKey] = useState(0)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 760px)')
-    const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const bump = () => setServiceIoKey((k) => k + 1)
-    mq.addEventListener('change', bump)
-    mqReduce.addEventListener('change', bump)
-    return () => {
-      mq.removeEventListener('change', bump)
-      mqReduce.removeEventListener('change', bump)
-    }
-  }, [])
-
-  useLayoutEffect(() => {
-    serviceCardRefs.current = serviceCardRefs.current.slice(0, services.length)
-  }, [services.length])
+  const servicesSectionRef = useRef(null)
+  const [servicesRevealed, setServicesRevealed] = useState(false)
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !window.IntersectionObserver) {
-      startTransition(() => {
-        setServiceVisible(new Set(services.map((_, i) => i)))
-      })
+      startTransition(() => setServicesRevealed(true))
+      return undefined
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      startTransition(() => setServicesRevealed(true))
       return undefined
     }
 
-    const mq = window.matchMedia('(min-width: 760px)')
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const el = servicesSectionRef.current
+    if (!el) return undefined
 
-    if (!mq.matches || reduceMotion) {
-      startTransition(() => {
-        setServiceVisible(new Set(services.map((_, i) => i)))
-      })
-      return undefined
-    }
-
-    startTransition(() => {
-      setServiceVisible(new Set())
-    })
+    // Same reveal on mobile and desktop; slightly earlier trigger on narrow viewports
+    // so the animation reliably fires while scrolling on phones.
+    const narrow =
+      typeof window !== 'undefined' && window.matchMedia('(max-width: 759px)').matches
+    const rootMargin = narrow ? '0px 0px 10% 0px' : '0px 0px -6% 0px'
 
     const observer = new IntersectionObserver(
       (entries) => {
-        setServiceVisible((prev) => {
-          const next = new Set(prev ?? [])
-          for (const entry of entries) {
-            const i = Number(entry.target.dataset.serviceIndex)
-            if (Number.isNaN(i)) continue
-            if (entry.isIntersecting) next.add(i)
-            else next.delete(i)
-          }
-          return next
-        })
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
+        startTransition(() => setServicesRevealed(true))
+        observer.disconnect()
       },
       {
-        threshold: [0, 0.08, 0.15, 0.25],
-        rootMargin: '0px 0px -7% 0px',
+        threshold: [0, 0.06, 0.12],
+        rootMargin,
       },
     )
 
-    const nodes = serviceCardRefs.current.filter(Boolean)
-    for (const el of nodes) {
-      observer.observe(el)
-    }
-
-    return () => {
-      for (const el of nodes) {
-        observer.unobserve(el)
-      }
-      observer.disconnect()
-    }
-  }, [lang, services, serviceIoKey])
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const audienceRef = useRef(null)
   const [audienceInView, setAudienceInView] = useState(false)
@@ -599,36 +564,32 @@ export default function App() {
           </aside>
         </section>
 
-        <section id="services" className="section">
-          <div className="section-head">
-            <div>
-              <h2>{s.servicesTitle}</h2>
-              <p>{s.servicesSubtitle}</p>
-            </div>
-            <PhoneLink label={s.callFull(COMPANY.phoneDisplay)} />
-          </div>
-
-          <div className="grid services-grid">
-            {services.map((svc, i) => (
-              <div
-                key={svc.title}
-                ref={(el) => {
-                  serviceCardRefs.current[i] = el
-                }}
-                className={`card service-card ${
-                  serviceVisible === null || serviceVisible.has(i) ? 'service-card--inview' : ''
-                }`}
-                data-service-index={i}
-                style={{ '--service-stagger': i }}
-              >
-                <div className="service-title">{svc.title}</div>
-                <ul className="service-list">
-                  {svc.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+        <section
+          id="services"
+          ref={servicesSectionRef}
+          className={`section services-section${servicesRevealed ? ' services-section--revealed' : ''}`}
+        >
+          <div className="services-section-inner">
+            <div className="section-head">
+              <div>
+                <h2>{s.servicesTitle}</h2>
+                <p>{s.servicesSubtitle}</p>
               </div>
-            ))}
+              <PhoneLink label={s.callFull(COMPANY.phoneDisplay)} />
+            </div>
+
+            <div className="grid services-grid">
+              {services.map((svc) => (
+                <div key={svc.title} className="card service-card">
+                  <div className="service-title">{svc.title}</div>
+                  <ul className="service-list">
+                    {svc.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

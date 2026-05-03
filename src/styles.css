@@ -701,33 +701,25 @@ a:hover {
   padding: 16px;
 }
 
-/* Desktop: service cards fade/slide in when scrolling down into view, fade out when scrolling away */
-@media (min-width: 760px) {
-  .services-grid .service-card {
-    opacity: 0;
-    transform: translateY(28px);
-    transition:
-      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-    transition-delay: calc(var(--service-stagger, 0) * 55ms);
-  }
-
-  .services-grid .service-card.service-card--inview {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/*
+ * Services scroll-reveal: identical behavior on mobile and desktop (no breakpoint split).
+ * Hidden state uses opacity/transform until `.services-section--revealed` is set via IO.
+ */
+.services-section:not(.services-section--revealed) .services-section-inner {
+  opacity: 0;
+  transform: translateY(28px);
 }
 
-@media (max-width: 759px) {
-  .services-grid .service-card {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
+.services-section.services-section--revealed .services-section-inner {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .services-grid .service-card {
+  .services-section .services-section-inner {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
