@@ -354,6 +354,8 @@ export default function App() {
 
   const servicesSectionRef = useRef(null)
   const [servicesRevealed, setServicesRevealed] = useState(false)
+  const servicesRevealedRef = useRef(false)
+  const servicesRevealGateRef = useRef(false)
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !window.IntersectionObserver) {
@@ -368,18 +370,52 @@ export default function App() {
     const el = servicesSectionRef.current
     if (!el) return undefined
 
-    // Same reveal on mobile and desktop; slightly earlier trigger on narrow viewports
-    // so the animation reliably fires while scrolling on phones.
-    const narrow =
-      typeof window !== 'undefined' && window.matchMedia('(max-width: 759px)').matches
+    // Do not reveal on first paint even if the section intersects (e.g. large monitor).
+    // Wait until the user scrolls (wheel/touch/scroll) and the block is in view—except
+    // mid-page loads / #services where scroll position or hash already implies intent.
+    if (window.scrollY > 20 || window.location.hash === '#services') {
+      servicesRevealGateRef.current = true
+    }
+
+    const narrow = window.matchMedia('(max-width: 759px)').matches
     const rootMargin = narrow ? '0px 0px 10% 0px' : '0px 0px -6% 0px'
 
-    const observer = new IntersectionObserver(
+    let io = null
+    let cleanedUp = false
+
+    const tearDown = () => {
+      if (cleanedUp) return
+      cleanedUp = true
+      if (io) io.disconnect()
+      window.removeEventListener('scroll', onUserScroll)
+      window.removeEventListener('wheel', onUserScroll)
+      window.removeEventListener('touchmove', onUserScroll)
+    }
+
+    const finishReveal = () => {
+      if (servicesRevealedRef.current) return
+      servicesRevealedRef.current = true
+      startTransition(() => setServicesRevealed(true))
+      tearDown()
+    }
+
+    const sectionIsInView = () => {
+      const rect = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const margin = vh * 0.06
+      return rect.top < vh - margin && rect.bottom > margin
+    }
+
+    const onUserScroll = () => {
+      servicesRevealGateRef.current = true
+      if (sectionIsInView()) finishReveal()
+    }
+
+    io = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
-        if (!entry?.isIntersecting) return
-        startTransition(() => setServicesRevealed(true))
-        observer.disconnect()
+        if (!entry?.isIntersecting || !servicesRevealGateRef.current) return
+        finishReveal()
       },
       {
         threshold: [0, 0.06, 0.12],
@@ -387,8 +423,13 @@ export default function App() {
       },
     )
 
-    observer.observe(el)
-    return () => observer.disconnect()
+    io.observe(el)
+
+    window.addEventListener('scroll', onUserScroll, { passive: true })
+    window.addEventListener('wheel', onUserScroll, { passive: true })
+    window.addEventListener('touchmove', onUserScroll, { passive: true })
+
+    return () => tearDown()
   }, [])
 
   const audienceRef = useRef(null)
