@@ -16,8 +16,31 @@ export default defineConfig(({ mode }) => {
     )
   }
 
+  const injectSiteUrlMeta = () => ({
+    name: 'inject-site-url-meta',
+    transformIndexHtml(html) {
+      const base = String(
+        process.env.URL ||
+          process.env.DEPLOY_PRIME_URL ||
+          process.env.VITE_SITE_URL ||
+          '',
+      )
+        .trim()
+        .replace(/\/$/, '')
+      if (!base) {
+        return html.replace('<!--SITE_URL_INJECTION-->', '')
+      }
+      const block = `
+    <link rel="canonical" href="${base}/" />
+    <meta property="og:url" content="${base}/" />
+    <meta property="og:image" content="${base}/kts-logo.png" />
+    <meta name="twitter:image" content="${base}/kts-logo.png" />`
+      return html.replace('<!--SITE_URL_INJECTION-->', block)
+    },
+  })
+
   return {
-    plugins: [react()],
+    plugins: [react(), injectSiteUrlMeta()],
     envDir: rootDir,
   }
 })
