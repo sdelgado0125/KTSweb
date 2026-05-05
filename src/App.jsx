@@ -472,7 +472,7 @@ export default function App() {
         <div className="container header-inner">
           <a href="#top" className="brand" onClick={() => setNavOpen(false)}>
             <div className="brand-mark" aria-hidden="true">
-              <img className="brand-logo" src="/kts-logo.png" alt="" />
+              <img className="brand-logo" src="/kts-logo.png" alt="KTS logo" />
             </div>
             <div className="brand-text">
               <div className="brand-name">{COMPANY.name}</div>
