@@ -249,25 +249,44 @@ img {
 
 .lang-toggle {
   display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
   border: 1px solid var(--border);
   border-radius: 999px;
   overflow: hidden;
-  width: fit-content;
+  isolation: isolate;
 }
 
 .lang-btn {
+  appearance: none;
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 44px;
+  margin: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
   padding: 8px 12px;
+  font-family: inherit;
   font-weight: 700;
   font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: center;
   cursor: pointer;
   color: var(--muted);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .lang-btn.is-active {
   background: var(--bg-deep);
   color: #fff;
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: -2px;
 }
 
 /* Buttons */
@@ -452,6 +471,49 @@ img {
 
 .page-hero--biz {
   background: linear-gradient(135deg, #0f1720 0%, #15556b 55%, #1f6f8b 100%);
+}
+
+/* Soft themed page wash so hero stands out vs flat white below */
+.service-page--home {
+  background:
+    linear-gradient(180deg, rgba(196, 92, 38, 0.1) 0%, transparent 28%),
+    linear-gradient(160deg, #faf3ec 0%, #f6ebe2 45%, #f3e6db 100%);
+}
+
+.service-page--biz {
+  background:
+    linear-gradient(180deg, rgba(31, 111, 139, 0.12) 0%, transparent 28%),
+    linear-gradient(160deg, #eef5f8 0%, #e7f0f4 45%, #e2eef3 100%);
+}
+
+.service-page--home .section--tint {
+  background: rgba(196, 92, 38, 0.08);
+  border-block-color: rgba(196, 92, 38, 0.14);
+}
+
+.service-page--biz .section--tint {
+  background: rgba(31, 111, 139, 0.08);
+  border-block-color: rgba(31, 111, 139, 0.14);
+}
+
+.service-page--home .industry-chip,
+.service-page--biz .industry-chip {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.service-page--home .feature-block,
+.service-page--home .outcome-item,
+.service-page--home .why-panel,
+.service-page--home .strategy-panel,
+.service-page--home .pricing-item,
+.service-page--home .deposit-note,
+.service-page--biz .feature-block,
+.service-page--biz .outcome-item,
+.service-page--biz .why-panel,
+.service-page--biz .strategy-panel,
+.service-page--biz .pricing-item,
+.service-page--biz .deposit-note {
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .page-hero-inner {

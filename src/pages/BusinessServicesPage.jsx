@@ -5,7 +5,7 @@ export default function BusinessServicesPage({ s, onRequest }) {
   const p = s.business
 
   return (
-    <>
+    <div className="service-page service-page--biz">
       <section className="page-hero page-hero--biz">
         <div className="container page-hero-inner">
           <p className="eyebrow">{p.eyebrow}</p>
@@ -123,6 +123,6 @@ export default function BusinessServicesPage({ s, onRequest }) {
         emailLabel={s.emailFull(COMPANY.email)}
         tone="biz"
       />
-    </>
+    </div>
   )
 }

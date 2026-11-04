@@ -5,7 +5,7 @@ export default function HomeServicesPage({ s, onRequest }) {
   const p = s.homeServices
 
   return (
-    <>
+    <div className="service-page service-page--home">
       <section className="page-hero page-hero--home">
         <div className="container page-hero-inner">
           <p className="eyebrow">{p.eyebrow}</p>
@@ -93,6 +93,6 @@ export default function HomeServicesPage({ s, onRequest }) {
         callLabel={s.callFull(COMPANY.phoneDisplay)}
         tone="home"
       />
-    </>
+    </div>
   )
 }
