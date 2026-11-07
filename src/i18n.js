@@ -174,6 +174,24 @@ export const STRINGS = {
         { title: 'Stronger local visibility', body: 'SEO and Google Business Profile work that helps nearby customers find you.' },
         { title: 'Less busywork', body: 'Automation that captures inquiries and keeps follow-up consistent.' },
       ],
+      demosTitle: 'Website demos',
+      demosLead: 'Examples of sites built for local businesses—swipe through and picture your brand here.',
+      demosPrev: 'Previous demo',
+      demosNext: 'Next demo',
+      demos: [
+        {
+          label: 'Auto Shop',
+          caption: 'Apex Auto — lead-focused auto repair site',
+          src: '/demos/auto-shop.jpg',
+          alt: 'Demo website for an auto repair shop',
+        },
+        {
+          label: 'Contractors',
+          caption: 'Ridgeway Exteriors — power washing contractor site',
+          src: '/demos/contractors.jpg',
+          alt: 'Demo website for a power washing contractor',
+        },
+      ],
       servicesTitle: 'Growth services',
       services: [
         {
@@ -465,6 +483,24 @@ export const STRINGS = {
         { title: 'Un sitio que funciona en el celular', body: 'Páginas rápidas y legibles, pensadas para cómo la gente busca y llama.' },
         { title: 'Más visibilidad local', body: 'SEO y Google Business Profile para que los clientes cercanos lo encuentren.' },
         { title: 'Menos trabajo repetitivo', body: 'Automatización que captura consultas y mantiene el seguimiento constante.' },
+      ],
+      demosTitle: 'Demos de sitios web',
+      demosLead: 'Ejemplos de sitios para negocios locales—revise las muestras e imagine su marca aquí.',
+      demosPrev: 'Demo anterior',
+      demosNext: 'Siguiente demo',
+      demos: [
+        {
+          label: 'Taller de auto',
+          caption: 'Apex Auto — sitio enfocado en leads para reparación de autos',
+          src: '/demos/auto-shop.jpg',
+          alt: 'Demo de sitio web para un taller de autos',
+        },
+        {
+          label: 'Contratistas',
+          caption: 'Ridgeway Exteriors — sitio para contratista de power washing',
+          src: '/demos/contractors.jpg',
+          alt: 'Demo de sitio web para un contratista de power washing',
+        },
       ],
       servicesTitle: 'Servicios de crecimiento',
       services: [

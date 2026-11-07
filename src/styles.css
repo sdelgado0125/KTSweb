@@ -512,8 +512,92 @@ img {
 .service-page--biz .why-panel,
 .service-page--biz .strategy-panel,
 .service-page--biz .pricing-item,
-.service-page--biz .deposit-note {
+.service-page--biz .deposit-note,
+.service-page--biz .demo-slideshow {
   background: rgba(255, 255, 255, 0.92);
+}
+
+/* Website demo slideshow */
+.demo-slideshow {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  padding: 14px;
+}
+
+.demo-frame {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0f1720;
+  border: 1px solid rgba(15, 24, 32, 0.12);
+}
+
+.demo-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.demo-controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 0 4px 4px;
+}
+
+.demo-nav-btn {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+  border-radius: 12px;
+}
+
+.demo-meta {
+  text-align: center;
+  min-width: 0;
+}
+
+.demo-label {
+  margin: 0;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.demo-caption {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.demo-dots {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.demo-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0;
+  background: #c5d0db;
+  cursor: pointer;
+}
+
+.demo-dot.is-active {
+  background: var(--biz);
+  width: 22px;
 }
 
 .page-hero-inner {

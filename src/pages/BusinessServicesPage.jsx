@@ -1,5 +1,6 @@
 import { COMPANY } from '../company.js'
 import CtaBand from '../components/CtaBand.jsx'
+import DemoSlideshow from '../components/DemoSlideshow.jsx'
 
 export default function BusinessServicesPage({ s, onRequest }) {
   const p = s.business
@@ -36,7 +37,15 @@ export default function BusinessServicesPage({ s, onRequest }) {
         </div>
       </section>
 
-      <section className="section section--tint">
+      <DemoSlideshow
+        title={p.demosTitle}
+        lead={p.demosLead}
+        prevLabel={p.demosPrev}
+        nextLabel={p.demosNext}
+        slides={p.demos}
+      />
+
+      <section className="section">
         <div className="container">
           <h2 className="section-intro-title">{p.servicesTitle}</h2>
           <div className="feature-grid">
