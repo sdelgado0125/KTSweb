@@ -527,6 +527,10 @@ img {
 }
 
 .demo-frame {
+  position: relative;
+  width: 100%;
+  /* Matches demo screenshot size (1024×465) so full page shows without crop */
+  aspect-ratio: 1024 / 465;
   border-radius: 14px;
   overflow: hidden;
   background: #0f1720;
@@ -534,12 +538,27 @@ img {
 }
 
 .demo-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top center;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
   display: block;
+  opacity: 0;
+  transition: opacity 0.85s ease;
+  pointer-events: none;
+}
+
+.demo-image.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-image {
+    transition: none;
+  }
 }
 
 .demo-controls {

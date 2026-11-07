@@ -1,10 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+const AUTO_MS = 5000
 
 export default function DemoSlideshow({ title, lead, prevLabel, nextLabel, slides }) {
   const [index, setIndex] = useState(0)
   const count = slides.length
   const safeIndex = count ? ((index % count) + count) % count : 0
   const current = slides[safeIndex]
+
+  useEffect(() => {
+    if (count < 2) return undefined
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return undefined
+    }
+
+    const id = window.setInterval(() => {
+      setIndex((i) => i + 1)
+    }, AUTO_MS)
+
+    return () => window.clearInterval(id)
+  }, [count, safeIndex])
 
   if (!count || !current) return null
 
@@ -22,14 +37,17 @@ export default function DemoSlideshow({ title, lead, prevLabel, nextLabel, slide
 
         <div className="demo-slideshow" aria-roledescription="carousel" aria-label={title}>
           <div className="demo-frame">
-            <img
-              key={current.src}
-              className="demo-image"
-              src={current.src}
-              alt={current.alt || current.label}
-              loading="lazy"
-              decoding="async"
-            />
+            {slides.map((slide, i) => (
+              <img
+                key={slide.src}
+                className={`demo-image${i === safeIndex ? ' is-active' : ''}`}
+                src={slide.src}
+                alt={slide.alt || slide.label}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                aria-hidden={i !== safeIndex}
+              />
+            ))}
           </div>
 
           <div className="demo-controls">
